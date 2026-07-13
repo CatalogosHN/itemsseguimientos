@@ -253,6 +253,52 @@
       overflow-wrap: anywhere;
     }
 
+    .details-section {
+      padding: 24px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfdff;
+    }
+
+    .details-section-title {
+      margin: 0 0 16px;
+      font-size: 18px;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .detail-box {
+      min-width: 0;
+      padding: 14px 15px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+    }
+
+    .detail-box.wide {
+      grid-column: 1 / -1;
+    }
+
+    .detail-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .detail-value {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+      white-space: pre-line;
+    }
+
     .timeline-section {
       padding: 26px 24px 30px;
     }
@@ -457,6 +503,18 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
+      .details-section {
+        padding: 20px 17px;
+      }
+
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .detail-box.wide {
+        grid-column: auto;
+      }
+
       .timeline-section {
         padding: 23px 17px 26px;
       }
@@ -517,7 +575,7 @@
         <input
           id="guideInput"
           type="text"
-          placeholder="Ejemplo: 416290616-1"
+          placeholder="Ejemplo: 416335274-1"
           autocomplete="off"
           spellcheck="false"
         />
@@ -557,6 +615,42 @@
         </div>
       </div>
 
+      <div class="details-section">
+        <h3 class="details-section-title">Información del envío</h3>
+
+        <div class="details-grid">
+          <div class="detail-box">
+            <span class="detail-label">Remitente</span>
+            <span id="senderName" class="detail-value"></span>
+          </div>
+
+          <div class="detail-box">
+            <span class="detail-label">Cliente destinatario</span>
+            <span id="recipientName" class="detail-value"></span>
+          </div>
+
+          <div class="detail-box">
+            <span class="detail-label">Teléfono del cliente</span>
+            <span id="recipientPhone" class="detail-value"></span>
+          </div>
+
+          <div class="detail-box">
+            <span class="detail-label">Agencia asignada</span>
+            <span id="assignedAgency" class="detail-value"></span>
+          </div>
+
+          <div class="detail-box wide">
+            <span class="detail-label">Dirección exacta de entrega</span>
+            <span id="deliveryAddress" class="detail-value"></span>
+          </div>
+
+          <div class="detail-box wide">
+            <span class="detail-label">Referencias e indicaciones</span>
+            <span id="deliveryReferences" class="detail-value"></span>
+          </div>
+        </div>
+      </div>
+
       <div class="timeline-section">
         <h3 class="section-title">Progreso del envío</h3>
         <div id="timeline" class="timeline"></div>
@@ -592,7 +686,7 @@
       4 = Entregado
 
     ENLACE DIRECTO:
-      https://sudominio.com/?guia=416290616-1
+      https://sudominio.com/?guia=416335274-1
 
     Para agregar otra guía:
       copie un bloque completo dentro de "guides"
@@ -612,19 +706,20 @@
       guides: {
         "416290616-1": {
           currentStatus: 2,
-
           lastUpdate: "13 de julio de 2026, 4:27 p. m.",
           estimatedDelivery: "13 de julio de 2026",
-          origin: "Tegucigalpa, Francisco Morazán",
-          destination: "San Lorenzo, Valle",
 
-          // Este nombre aparecerá en el estado “Ubicado en agencia”.
+          senderName: "INTERNATIONAL ITEMS",
+          origin: "Residencial Hacienda Real, Tegucigalpa, Honduras",
+
+          recipientName: "Cliente registrado",
+          recipientPhone: "Sin especificar",
+          destination: "San Lorenzo, Valle",
+          deliveryAddress: "San Lorenzo, Valle, Honduras",
+          references: "Sin referencias adicionales.",
+
           agencyName: "Agencia de San Lorenzo",
 
-          /*
-            Puede dejar date o note vacíos: ""
-            Los estados posteriores al currentStatus aparecerán pendientes.
-          */
           steps: [
             {
               date: "11 de julio de 2026, 8:35 a. m.",
@@ -649,24 +744,135 @@
           ]
         },
 
-        /*
-        EJEMPLO DE OTRA GUÍA:
+        "416335274-1": {
+          // Cambie este número cuando avance la guía:
+          // 0 No enviado | 1 En tránsito | 2 En agencia | 3 En ruta | 4 Entregado
+          currentStatus: 0,
 
-        "GUIA-002": {
-          currentStatus: 4,
-          lastUpdate: "14 de julio de 2026, 2:30 p. m.",
-          estimatedDelivery: "Entregado",
-          origin: "Tegucigalpa",
-          destination: "Choluteca",
-          agencyName: "Agencia de Choluteca",
+          lastUpdate: "13 de julio de 2026",
+          estimatedDelivery: "Pendiente de definir",
+
+          senderName: "INTERNATIONAL ITEMS",
+          origin: "Residencial Hacienda Real, Tegucigalpa, Honduras",
+
+          recipientName: "Cristian David Núñez",
+          recipientPhone: "9688-6306",
+          destination: "Arizona, Atlántida",
+          deliveryAddress: "Hicaque, orilla de la CA-13, frente a la iglesia de Dios, exactamente en el taller Multiservicios MM, Arizona, Atlántida.",
+          references: "Referencia 1: En el taller Multiservicios MM.\nReferencia 2: Llamar 30 minutos antes para coordinar la entrega.",
+
+          agencyName: "Agencia de Arizona, Atlántida",
+
           steps: [
-            { date: "12 de julio, 9:00 a. m.", note: "Pendiente de despacho." },
-            { date: "12 de julio, 1:20 p. m.", note: "Paquete en tránsito." },
-            { date: "13 de julio, 8:10 a. m.", note: "Recibido en agencia." },
-            { date: "14 de julio, 9:15 a. m.", note: "En ruta al destino final." },
-            { date: "14 de julio, 2:30 p. m.", note: "Entregado al destinatario." }
+            {
+              date: "13 de julio de 2026",
+              note: "La guía fue registrada y el paquete aún no ha sido enviado."
+            },
+            {
+              date: "",
+              note: "El paquete se encuentra trasladándose hacia la ciudad de destino."
+            },
+            {
+              date: "",
+              note: "El paquete ya se encuentra en la agencia indicada."
+            },
+            {
+              date: "",
+              note: "El paquete salió de la agencia y va hacia la dirección final."
+            },
+            {
+              date: "",
+              note: "La entrega fue completada satisfactoriamente."
+            }
+          ]
+        },
+
+        "416320068-1": {
+          currentStatus: 0,
+
+          lastUpdate: "13 de julio de 2026",
+          estimatedDelivery: "Pendiente de definir",
+
+          senderName: "INTERNATIONAL ITEMS",
+          origin: "Residencial Hacienda Real, Tegucigalpa, Honduras",
+
+          recipientName: "Angel David",
+          recipientPhone: "9778-8729",
+          destination: "San Pedro Sula, Cortés",
+          deliveryAddress: "En la entrada de la Central de Abastos, San Pedro Sula, Cortés.",
+          references: "Referencia 1: Llamar 30 minutos antes para coordinar la entrega.\nReferencia 2: Llamar 30 minutos antes para coordinar la entrega.",
+
+          agencyName: "Agencia de San Pedro Sula",
+
+          steps: [
+            {
+              date: "13 de julio de 2026",
+              note: "La guía fue registrada y el paquete aún no ha sido enviado."
+            },
+            {
+              date: "",
+              note: "El paquete se encuentra trasladándose hacia la ciudad de destino."
+            },
+            {
+              date: "",
+              note: "El paquete ya se encuentra en la agencia indicada."
+            },
+            {
+              date: "",
+              note: "El paquete salió de la agencia y va hacia la dirección final."
+            },
+            {
+              date: "",
+              note: "La entrega fue completada satisfactoriamente."
+            }
+          ]
+        },
+
+        "416319819A-1": {
+          currentStatus: 0,
+
+          lastUpdate: "13 de julio de 2026",
+          estimatedDelivery: "Pendiente de definir",
+
+          senderName: "INTERNATIONAL ITEMS",
+          origin: "Residencial Hacienda Real, Tegucigalpa, Honduras",
+
+          recipientName: "Melvin Díaz",
+          recipientPhone: "9509-3261",
+          destination: "Morazán, Yoro",
+          deliveryAddress: "Entrega en agencia: Agencia Morazán, Yoro.",
+          references: "Referencia 1: Recoge en Agencia Morazán, Yoro.\nReferencia 2: Recoge en Agencia Morazán, Yoro.",
+
+          agencyName: "Agencia Morazán, Yoro",
+
+          steps: [
+            {
+              date: "13 de julio de 2026",
+              note: "La guía fue registrada y el paquete aún no ha sido enviado."
+            },
+            {
+              date: "",
+              note: "El paquete se encuentra trasladándose hacia la ciudad de destino."
+            },
+            {
+              date: "",
+              note: "El paquete ya se encuentra en la Agencia Morazán, Yoro."
+            },
+            {
+              date: "",
+              note: "El paquete está listo para ser retirado o entregado según corresponda."
+            },
+            {
+              date: "",
+              note: "La entrega fue completada satisfactoriamente."
+            }
           ]
         }
+
+        /*
+          PARA AGREGAR OTRA GUÍA:
+          Copie cualquiera de los bloques anteriores, péguelo antes de este
+          comentario y asegúrese de colocar una coma entre cada guía.
         */
       }
     };
@@ -772,6 +978,24 @@
 
       document.getElementById("destination").textContent =
         data.destination || "Sin especificar";
+
+      document.getElementById("senderName").textContent =
+        data.senderName || CONFIG.companyName || "Sin especificar";
+
+      document.getElementById("recipientName").textContent =
+        data.recipientName || "Sin especificar";
+
+      document.getElementById("recipientPhone").textContent =
+        data.recipientPhone || "Sin especificar";
+
+      document.getElementById("assignedAgency").textContent =
+        data.agencyName || "Pendiente de definir";
+
+      document.getElementById("deliveryAddress").textContent =
+        data.deliveryAddress || "Sin especificar";
+
+      document.getElementById("deliveryReferences").textContent =
+        data.references || "Sin referencias adicionales.";
 
       const timeline = document.getElementById("timeline");
       timeline.innerHTML = "";
