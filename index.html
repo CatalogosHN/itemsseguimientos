@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#087cff" />
+  <title>Seguimiento de guía</title>
+
+  <!--
+    ============================================================
+    ARCHIVO ÚNICO PARA GITHUB PAGES
+    ============================================================
+    1. Suba este archivo como: index.html
+    2. Suba su logo, por ejemplo: logo.png
+    3. Suba su favicon, por ejemplo: favicon.ico
+    4. Edite únicamente la sección "CONFIGURACIÓN EDITABLE".
+    5. El enlace de cada guía será:
+       https://sudominio.com/?guia=NUMERO-DE-GUIA
+    ============================================================
+  -->
+
+  <style>
+    :root {
+      --primary: #087cff;
+      --primary-dark: #0063d1;
+      --success: #18a957;
+      --text: #172033;
+      --muted: #6f7a8f;
+      --line: #dce3ec;
+      --background: #f4f7fb;
+      --card: #ffffff;
+      --danger: #dc3545;
+      --shadow: 0 10px 30px rgba(30, 55, 90, 0.10);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(8, 124, 255, 0.10), transparent 34%),
+        var(--background);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .page {
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      padding: 24px 16px 50px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .logo-wrap {
+      width: 58px;
+      height: 58px;
+      flex: 0 0 58px;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .logo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 6px;
+    }
+
+    .logo-fallback {
+      font-weight: 900;
+      color: var(--primary);
+      font-size: 19px;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: clamp(19px, 4vw, 28px);
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-text p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(220, 227, 236, 0.9);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .search-card {
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .search-title {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .search-subtitle {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .search-form {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-form input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid #cfd8e5;
+      border-radius: 12px;
+      padding: 13px 14px;
+      outline: none;
+      background: #fff;
+      transition: 0.2s ease;
+    }
+
+    .search-form input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(8, 124, 255, 0.12);
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 18px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .tracking-card {
+      overflow: hidden;
+    }
+
+    .tracking-header {
+      padding: 24px;
+      background: linear-gradient(135deg, #087cff, #4ba2ff);
+      color: #fff;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.82;
+      font-weight: 800;
+    }
+
+    .guide-number {
+      margin: 7px 0 0;
+      font-size: clamp(25px, 6vw, 38px);
+      line-height: 1;
+      word-break: break-word;
+    }
+
+    .current-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      font-weight: 800;
+      text-align: center;
+      backdrop-filter: blur(6px);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .summary-item {
+      padding: 17px 18px;
+      background: #fff;
+      min-width: 0;
+    }
+
+    .summary-label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .summary-value {
+      display: block;
+      font-weight: 800;
+      font-size: 14px;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .timeline-section {
+      padding: 26px 24px 30px;
+    }
+
+    .section-title {
+      margin: 0 0 24px;
+      font-size: 20px;
+    }
+
+    .timeline {
+      position: relative;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      position: relative;
+      min-height: 105px;
+    }
+
+    .step:last-child {
+      min-height: auto;
+    }
+
+    .step-marker {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .step:not(:last-child) .step-marker::after {
+      content: "";
+      position: absolute;
+      top: 31px;
+      bottom: -7px;
+      width: 3px;
+      background: var(--line);
+      border-radius: 99px;
+    }
+
+    .step.completed:not(:last-child) .step-marker::after {
+      background: var(--primary);
+    }
+
+    .circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 3px solid #cbd5e1;
+      background: #fff;
+      position: relative;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .step.completed .circle {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .step.current .circle {
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 7px rgba(8, 124, 255, 0.13);
+    }
+
+    .step.current .circle::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    .step.delivered.completed .circle,
+    .step.delivered.current .circle {
+      border-color: var(--success);
+      background: var(--success);
+      box-shadow: 0 0 0 7px rgba(24, 169, 87, 0.13);
+    }
+
+    .step.delivered.current .circle::after {
+      background: #fff;
+    }
+
+    .step-content {
+      padding: 0 0 26px;
+    }
+
+    .step-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .step-title {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .step.pending .step-title {
+      color: #8c96a8;
+    }
+
+    .step-date {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .step-note {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .agency {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 9px;
+      border-radius: 9px;
+      background: #eef6ff;
+      color: var(--primary-dark);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .not-found {
+      padding: 34px 24px;
+      text-align: center;
+    }
+
+    .not-found-icon {
+      width: 58px;
+      height: 58px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #fff0f1;
+      color: var(--danger);
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .not-found h2 {
+      margin: 0 0 8px;
+    }
+
+    .not-found p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 20px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 16px 12px 34px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .logo-wrap {
+        width: 50px;
+        height: 50px;
+        flex-basis: 50px;
+        border-radius: 14px;
+      }
+
+      .tracking-header {
+        grid-template-columns: 1fr;
+        padding: 21px 18px;
+      }
+
+      .current-badge {
+        justify-self: start;
+      }
+
+      .summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .timeline-section {
+        padding: 23px 17px 26px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search-form {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .step {
+        grid-template-columns: 36px 1fr;
+        gap: 10px;
+      }
+
+      .step-title-row {
+        display: block;
+      }
+
+      .step-date {
+        margin-top: 4px;
+        text-align: left;
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo-wrap">
+          <img id="companyLogo" alt="Logo de la empresa" />
+          <span id="logoFallback" class="logo-fallback">LOGO</span>
+        </div>
+
+        <div class="brand-text">
+          <h1 id="companyName">Mi empresa</h1>
+          <p>Seguimiento de envíos</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="card search-card">
+      <h2 class="search-title">Consultar una guía</h2>
+      <p class="search-subtitle">Ingrese el número exactamente como fue registrado.</p>
+
+      <form id="searchForm" class="search-form">
+        <input
+          id="guideInput"
+          type="text"
+          placeholder="Ejemplo: 416290616-1"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="btn" type="submit">Buscar guía</button>
+      </form>
+    </section>
+
+    <section id="trackingCard" class="card tracking-card hidden">
+      <div class="tracking-header">
+        <div>
+          <div class="eyebrow">Número de guía</div>
+          <h2 id="guideNumber" class="guide-number"></h2>
+        </div>
+
+        <div id="currentBadge" class="current-badge"></div>
+      </div>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-label">Última actualización</span>
+          <span id="lastUpdate" class="summary-value"></span>
+        </div>
+
+        <div class="summary-item">
+          <span class="summary-label">Entrega estimada</span>
+          <span id="estimatedDelivery" class="summary-value"></span>
+        </div>
+
+        <div class="summary-item">
+          <span class="summary-label">Origen</span>
+          <span id="origin" class="summary-value"></span>
+        </div>
+
+        <div class="summary-item">
+          <span class="summary-label">Destino</span>
+          <span id="destination" class="summary-value"></span>
+        </div>
+      </div>
+
+      <div class="timeline-section">
+        <h3 class="section-title">Progreso del envío</h3>
+        <div id="timeline" class="timeline"></div>
+      </div>
+    </section>
+
+    <section id="notFoundCard" class="card not-found hidden">
+      <div class="not-found-icon">!</div>
+      <h2>Guía no encontrada</h2>
+      <p>
+        Revise el número ingresado. La guía debe coincidir exactamente con una
+        de las registradas en el archivo HTML.
+      </p>
+    </section>
+
+    <footer class="footer">
+      <span id="footerCompany"></span> · Sistema de seguimiento
+    </footer>
+  </main>
+
+  <script>
+    /*
+    ==============================================================
+    CONFIGURACIÓN EDITABLE
+    ==============================================================
+    Cambie aquí el nombre, logo, favicon y las guías.
+
+    ESTADO ACTUAL:
+      0 = No enviado
+      1 = En tránsito
+      2 = Ubicado en agencia
+      3 = En ruta a destino final
+      4 = Entregado
+
+    ENLACE DIRECTO:
+      https://sudominio.com/?guia=416290616-1
+
+    Para agregar otra guía:
+      copie un bloque completo dentro de "guides"
+      y cambie el número y los datos.
+    ==============================================================
+    */
+
+    const CONFIG = {
+      companyName: "INTERNATIONAL ITEMS",
+
+      // Puede ser PNG, JPG, SVG o WEBP.
+      logo: "logo.png",
+
+      // Puede ser .ico o PNG.
+      favicon: "favicon.ico",
+
+      guides: {
+        "416290616-1": {
+          currentStatus: 2,
+
+          lastUpdate: "13 de julio de 2026, 4:27 p. m.",
+          estimatedDelivery: "13 de julio de 2026",
+          origin: "Tegucigalpa, Francisco Morazán",
+          destination: "San Lorenzo, Valle",
+
+          // Este nombre aparecerá en el estado “Ubicado en agencia”.
+          agencyName: "Agencia de San Lorenzo",
+
+          /*
+            Puede dejar date o note vacíos: ""
+            Los estados posteriores al currentStatus aparecerán pendientes.
+          */
+          steps: [
+            {
+              date: "11 de julio de 2026, 8:35 a. m.",
+              note: "La guía fue registrada y está pendiente de despacho."
+            },
+            {
+              date: "11 de julio de 2026, 11:49 a. m.",
+              note: "El paquete fue recolectado y se encuentra en tránsito."
+            },
+            {
+              date: "13 de julio de 2026, 8:21 a. m.",
+              note: "El paquete ya se encuentra disponible en la agencia indicada."
+            },
+            {
+              date: "",
+              note: "El paquete saldrá de la agencia hacia la dirección final."
+            },
+            {
+              date: "",
+              note: "La entrega fue completada satisfactoriamente."
+            }
+          ]
+        },
+
+        /*
+        EJEMPLO DE OTRA GUÍA:
+
+        "GUIA-002": {
+          currentStatus: 4,
+          lastUpdate: "14 de julio de 2026, 2:30 p. m.",
+          estimatedDelivery: "Entregado",
+          origin: "Tegucigalpa",
+          destination: "Choluteca",
+          agencyName: "Agencia de Choluteca",
+          steps: [
+            { date: "12 de julio, 9:00 a. m.", note: "Pendiente de despacho." },
+            { date: "12 de julio, 1:20 p. m.", note: "Paquete en tránsito." },
+            { date: "13 de julio, 8:10 a. m.", note: "Recibido en agencia." },
+            { date: "14 de julio, 9:15 a. m.", note: "En ruta al destino final." },
+            { date: "14 de julio, 2:30 p. m.", note: "Entregado al destinatario." }
+          ]
+        }
+        */
+      }
+    };
+
+    /*
+    ==============================================================
+    FIN DE LA CONFIGURACIÓN
+    No necesita editar nada debajo de esta línea.
+    ==============================================================
+    */
+
+    const STEP_NAMES = [
+      "No enviado",
+      "En tránsito",
+      "Ubicado en agencia",
+      "En ruta a destino final",
+      "Entregado"
+    ];
+
+    const companyName = document.getElementById("companyName");
+    const footerCompany = document.getElementById("footerCompany");
+    const companyLogo = document.getElementById("companyLogo");
+    const logoFallback = document.getElementById("logoFallback");
+    const searchForm = document.getElementById("searchForm");
+    const guideInput = document.getElementById("guideInput");
+    const trackingCard = document.getElementById("trackingCard");
+    const notFoundCard = document.getElementById("notFoundCard");
+
+    companyName.textContent = CONFIG.companyName;
+    footerCompany.textContent = CONFIG.companyName;
+    document.title = `${CONFIG.companyName} | Seguimiento de guía`;
+
+    function configureBranding() {
+      if (CONFIG.favicon) {
+        const link = document.createElement("link");
+        link.rel = "icon";
+        link.href = CONFIG.favicon;
+        document.head.appendChild(link);
+      }
+
+      if (!CONFIG.logo) {
+        companyLogo.classList.add("hidden");
+        logoFallback.classList.remove("hidden");
+        return;
+      }
+
+      companyLogo.src = CONFIG.logo;
+      companyLogo.onload = () => {
+        companyLogo.classList.remove("hidden");
+        logoFallback.classList.add("hidden");
+      };
+
+      companyLogo.onerror = () => {
+        companyLogo.classList.add("hidden");
+        logoFallback.classList.remove("hidden");
+      };
+    }
+
+    function normalizeGuide(value) {
+      return String(value || "").trim();
+    }
+
+    function searchGuide(guide) {
+      const cleanGuide = normalizeGuide(guide);
+
+      if (!cleanGuide) {
+        trackingCard.classList.add("hidden");
+        notFoundCard.classList.add("hidden");
+        return;
+      }
+
+      const data = CONFIG.guides[cleanGuide];
+
+      if (!data) {
+        trackingCard.classList.add("hidden");
+        notFoundCard.classList.remove("hidden");
+        return;
+      }
+
+      renderTracking(cleanGuide, data);
+      notFoundCard.classList.add("hidden");
+      trackingCard.classList.remove("hidden");
+    }
+
+    function renderTracking(guide, data) {
+      const currentStatus = Math.max(
+        0,
+        Math.min(4, Number(data.currentStatus) || 0)
+      );
+
+      document.getElementById("guideNumber").textContent = guide;
+      document.getElementById("currentBadge").textContent =
+        STEP_NAMES[currentStatus];
+
+      document.getElementById("lastUpdate").textContent =
+        data.lastUpdate || "Sin especificar";
+
+      document.getElementById("estimatedDelivery").textContent =
+        data.estimatedDelivery || "Sin especificar";
+
+      document.getElementById("origin").textContent =
+        data.origin || "Sin especificar";
+
+      document.getElementById("destination").textContent =
+        data.destination || "Sin especificar";
+
+      const timeline = document.getElementById("timeline");
+      timeline.innerHTML = "";
+
+      STEP_NAMES.forEach((name, index) => {
+        const stepData = Array.isArray(data.steps) && data.steps[index]
+          ? data.steps[index]
+          : {};
+
+        const stateClass =
+          index < currentStatus
+            ? "completed"
+            : index === currentStatus
+            ? "current"
+            : "pending";
+
+        const step = document.createElement("article");
+        step.className =
+          `step ${stateClass}${index === 4 ? " delivered" : ""}`;
+
+        const title =
+          index === 2 && data.agencyName
+            ? `${name}: ${data.agencyName}`
+            : name;
+
+        const markerSymbol = index < currentStatus || (index === 4 && currentStatus === 4)
+          ? "✓"
+          : "";
+
+        step.innerHTML = `
+          <div class="step-marker">
+            <div class="circle">${markerSymbol}</div>
+          </div>
+
+          <div class="step-content">
+            <div class="step-title-row">
+              <h4 class="step-title">${escapeHtml(title)}</h4>
+              <div class="step-date">${escapeHtml(stepData.date || "")}</div>
+            </div>
+
+            ${
+              stepData.note
+                ? `<p class="step-note">${escapeHtml(stepData.note)}</p>`
+                : ""
+            }
+
+            ${
+              index === 2 && data.agencyName
+                ? `<span class="agency">${escapeHtml(data.agencyName)}</span>`
+                : ""
+            }
+          </div>
+        `;
+
+        timeline.appendChild(step);
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    searchForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const guide = normalizeGuide(guideInput.value);
+
+      if (!guide) {
+        searchGuide("");
+        return;
+      }
+
+      const url = new URL(window.location.href);
+      url.searchParams.set("guia", guide);
+      history.pushState({}, "", url);
+
+      searchGuide(guide);
+    });
+
+    window.addEventListener("popstate", () => {
+      const params = new URLSearchParams(window.location.search);
+      const guide = normalizeGuide(params.get("guia"));
+      guideInput.value = guide;
+      searchGuide(guide);
+    });
+
+    configureBranding();
+
+    const params = new URLSearchParams(window.location.search);
+    const initialGuide = normalizeGuide(params.get("guia"));
+
+    if (initialGuide) {
+      guideInput.value = initialGuide;
+      searchGuide(initialGuide);
+    }
+  </script>
+</body>
+</html>
