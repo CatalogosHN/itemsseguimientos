@@ -366,17 +366,14 @@
 
     .step.current .circle {
       border-color: var(--primary);
-      background: #fff;
+      background: var(--primary);
+      color: #fff;
       box-shadow: 0 0 0 7px rgba(8, 124, 255, 0.13);
       animation: pulseBlue 1.6s ease-in-out infinite;
     }
 
     .step.current .circle::after {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--primary);
+      content: none;
     }
 
     .step.delivered.completed .circle,
@@ -597,7 +594,7 @@
 
         <div class="brand-text">
           <h1 id="companyName">Mi empresa</h1>
-          <p>Seguimiento de envíos de Cargo Expreso</p>
+          <p>Seguimiento de envíos</p>
         </div>
       </div>
     </header>
@@ -696,7 +693,8 @@
       <div class="not-found-icon">!</div>
       <h2>Guía no encontrada</h2>
       <p>
-        Revise el número ingresado. La guía debe coincidir exactamente.
+        Revise el número ingresado. La guía debe coincidir exactamente con una
+        de las registradas en el archivo HTML.
       </p>
     </section>
 
@@ -739,7 +737,7 @@
 
       guides: {
         "416290616-1": {
-          currentStatus: 1,
+          currentStatus: 2,
           lastUpdate: "13 de julio de 2026, 4:27 p. m.",
           estimatedDelivery: "13 de julio de 2026",
 
@@ -781,7 +779,7 @@
         "416335274-1": {
           // Cambie este número cuando avance la guía:
           // 0 No enviado | 1 En tránsito | 2 En agencia | 3 En ruta | 4 Entregado
-          currentStatus: 1,
+          currentStatus: 0,
 
           lastUpdate: "13 de julio de 2026",
           estimatedDelivery: "Pendiente de definir",
@@ -822,7 +820,7 @@
         },
 
         "416320068-1": {
-          currentStatus: 1,
+          currentStatus: 0,
 
           lastUpdate: "13 de julio de 2026",
           estimatedDelivery: "Pendiente de definir",
@@ -863,7 +861,7 @@
         },
 
         "416319819A-1": {
-          currentStatus: 1,
+          currentStatus: 0,
 
           lastUpdate: "13 de julio de 2026",
           estimatedDelivery: "Pendiente de definir",
@@ -1055,7 +1053,7 @@
             ? `${name}: ${data.agencyName}`
             : name;
 
-        const markerSymbol = index < currentStatus || (index === 4 && currentStatus === 4)
+        const markerSymbol = index <= currentStatus
           ? "✓"
           : "";
 
