@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
-  <title>Seguimiento de envío | Items HN</title>
+  <title>Seguimiento de envío | International Items HN</title>
   <style>
     * { box-sizing: border-box; }
     [hidden] { display: none !important; }
@@ -80,7 +80,7 @@
 <body>
   <main class="card">
     <div class="icon">📦</div>
-    <h1>Items HN</h1>
+    <h1>International Items HN</h1>
     <p id="message">Preparando el seguimiento oficial de tu envío.</p>
     <div id="guideBox" class="guide">Cargando…</div>
     <div id="progress" class="bar"><span></span></div>
@@ -114,7 +114,7 @@
       const target = `https://api.loginextsolutions.com/trackall/#/order?ordno=${encodeURIComponent(guide)}&aid=${encodeURIComponent(AID)}`;
       guideBox.textContent = guide;
       manualLink.href = target;
-      setTimeout(() => window.location.replace(target), 1200);
+      setTimeout(() => window.location.replace(target), 5000);
     }
   </script>
 </body>
