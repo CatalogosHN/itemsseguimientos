@@ -4,117 +4,966 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
-  <title>Seguimiento de envío | International Items HN</title>
+  <meta name="theme-color" content="#1769e0">
+  <title>Seguimiento de envío | Items HN</title>
+
   <style>
-    * { box-sizing: border-box; }
-    [hidden] { display: none !important; }
-    html, body { min-height: 100%; margin: 0; }
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --line: #dfe6ef;
+      --primary: #1769e0;
+      --primary-dark: #0e4eaf;
+      --success: #138a4b;
+      --warning: #b76e00;
+      --danger: #c92c2c;
+      --pending: #aeb8c7;
+      --shadow: 0 18px 55px rgba(20, 39, 73, .12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
     body {
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(23, 105, 224, .13), transparent 34rem),
+        var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .page {
+      width: min(760px, calc(100% - 24px));
+      margin: 0 auto;
+      padding: 22px 0 50px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 52px;
+      height: 52px;
+      overflow: hidden;
       display: grid;
       place-items: center;
-      padding: 22px;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #172033;
-      background: radial-gradient(circle at top left, #ddecff, transparent 34rem), #f4f7fb;
-    }
-    .card {
-      width: min(480px, 100%);
-      padding: 30px;
-      border: 1px solid #dfe6ef;
-      border-radius: 25px;
-      background: rgba(255,255,255,.96);
-      box-shadow: 0 18px 55px rgba(20,39,73,.16);
-      text-align: center;
-    }
-    .icon {
-      width: 74px;
-      height: 74px;
-      display: grid;
-      place-items: center;
-      margin: 0 auto 17px;
-      border-radius: 23px;
+      flex: 0 0 52px;
+      border-radius: 17px;
       color: white;
-      font-size: 33px;
       background: linear-gradient(145deg, #2885ff, #0d50b7);
+      box-shadow: 0 12px 27px rgba(23, 105, 224, .25);
+      font-size: 25px;
+      font-weight: 950;
     }
-    h1 { margin: 0 0 8px; font-size: 27px; }
-    p { color: #667085; line-height: 1.55; }
-    .guide {
-      margin: 18px 0;
-      padding: 13px;
-      border-radius: 14px;
-      background: #eef5ff;
-      color: #0e4eaf;
-      font-size: 21px;
-      font-weight: 900;
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 18px;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, .96);
+      box-shadow: var(--shadow);
+    }
+
+    .search-card {
+      display: grid;
+      gap: 11px;
+      margin-bottom: 16px;
+      padding: 18px;
+    }
+
+    .search-title {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .search-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 9px;
+    }
+
+    .input {
+      width: 100%;
+      min-height: 48px;
+      padding: 11px 13px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      outline: none;
+      color: var(--text);
+      background: white;
+      text-transform: uppercase;
+    }
+
+    .input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(23, 105, 224, .12);
+    }
+
+    .btn {
+      min-height: 48px;
+      padding: 11px 17px;
+      border: 0;
+      border-radius: 13px;
+      color: white;
+      background: linear-gradient(145deg, #237cf2, #1259c5);
+      font-weight: 850;
+    }
+
+    .tracking-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+      padding: 23px;
+      color: white;
+      background: linear-gradient(140deg, #1769e0, #0d4aa6);
+    }
+
+    .eyebrow {
+      margin-bottom: 5px;
+      opacity: .78;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .guide-number {
+      margin: 0;
+      font-size: clamp(23px, 6vw, 34px);
       word-break: break-word;
     }
-    .bar {
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      max-width: 260px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      color: #11407e;
+      background: white;
+      font-size: 12px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      flex: 0 0 9px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        transform: scale(1.25);
+        opacity: .6;
+      }
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      padding: 17px 20px;
+      border-bottom: 1px solid var(--line);
+      background: #f8fbff;
+    }
+
+    .summary-item {
+      padding: 12px;
+      border: 1px solid #dce8f6;
+      border-radius: 14px;
+      background: white;
+    }
+
+    .summary-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .summary-value {
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 1.4;
+    }
+
+    .notice {
+      margin: 18px 20px 0;
+      padding: 14px 15px;
+      border: 1px solid #cfe0f5;
+      border-radius: 15px;
+      color: #244a78;
+      background: #f2f7ff;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .notice.warning {
+      border-color: #f0d099;
+      color: #7e4b00;
+      background: #fff7e8;
+    }
+
+    .notice.danger {
+      border-color: #f1b8b8;
+      color: #922222;
+      background: #fff0f0;
+    }
+
+    .timeline-wrap {
+      padding: 25px 20px 28px;
+    }
+
+    .timeline-title {
+      margin: 0 0 20px;
+      font-size: 19px;
+    }
+
+    .timeline {
+      display: grid;
+    }
+
+    .step {
+      position: relative;
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      min-height: 89px;
+    }
+
+    .step:last-child {
+      min-height: auto;
+    }
+
+    .step-line {
+      position: absolute;
+      z-index: 0;
+      top: 24px;
+      bottom: -3px;
+      left: 20px;
+      width: 3px;
+      border-radius: 99px;
+      background: #dce3ec;
+    }
+
+    .step:last-child .step-line {
+      display: none;
+    }
+
+    .dot {
+      position: relative;
+      z-index: 1;
+      width: 21px;
+      height: 21px;
+      display: grid;
+      place-items: center;
+      margin: 2px auto 0;
+      border: 4px solid white;
+      border-radius: 50%;
+      background: var(--pending);
+      box-shadow: 0 0 0 2px #d6dee8;
+    }
+
+    .step.completed .dot,
+    .step.current .dot {
+      background: var(--primary);
+      box-shadow: 0 0 0 2px #82b3f5;
+    }
+
+    .step.completed .step-line {
+      background: var(--primary);
+    }
+
+    .step.warning .dot {
+      background: var(--warning);
+      box-shadow: 0 0 0 2px #efc37c;
+    }
+
+    .step.completed .dot::after {
+      content: "✓";
+      color: white;
+      font-size: 10px;
+      font-weight: 950;
+    }
+
+    .step.current .dot {
+      animation: currentPulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes currentPulse {
+      50% {
+        box-shadow: 0 0 0 8px rgba(23, 105, 224, .12);
+      }
+    }
+
+    .step-content {
+      padding-bottom: 24px;
+    }
+
+    .step-title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .step-title {
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .step-date {
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .step-description {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .state-card {
+      padding: 35px 24px;
+      text-align: center;
+    }
+
+    .state-icon {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+      border-radius: 23px;
+      color: white;
+      background: linear-gradient(145deg, #2885ff, #0d50b7);
+      font-size: 32px;
+    }
+
+    .state-card h2 {
+      margin: 0 0 8px;
+    }
+
+    .state-card p {
+      max-width: 520px;
+      margin: 0 auto;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .loader {
+      width: 46px;
+      height: 46px;
+      margin: 20px auto 0;
+      border: 4px solid #dce7f5;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .progress {
       height: 9px;
       overflow: hidden;
+      margin: 20px auto 0;
       border-radius: 99px;
       background: #dce8f8;
     }
-    .bar span {
+
+    .progress span {
       display: block;
       width: 0;
       height: 100%;
       border-radius: inherit;
-      background: #1769e0;
-      animation: load 1.3s ease forwards;
+      background: var(--primary);
+      animation: load 1.1s ease forwards;
     }
-    @keyframes load { to { width: 100%; } }
-    a {
-      display: inline-flex;
-      margin-top: 18px;
-      padding: 11px 16px;
-      border-radius: 13px;
-      color: white;
-      background: #1769e0;
-      font-weight: 800;
-      text-decoration: none;
+
+    @keyframes load {
+      to {
+        width: 100%;
+      }
     }
-    .error { color: #bd2525; }
+
+    .footer {
+      margin-top: 16px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 620px) {
+      .page {
+        width: min(100% - 16px, 760px);
+        padding-top: 12px;
+      }
+
+      .topbar {
+        padding: 4px;
+      }
+
+      .search-form {
+        grid-template-columns: 1fr;
+      }
+
+      .tracking-head {
+        grid-template-columns: 1fr;
+      }
+
+      .status-pill {
+        justify-self: start;
+      }
+
+      .summary {
+        grid-template-columns: 1fr;
+      }
+
+      .step-title-row {
+        display: block;
+      }
+
+      .step-date {
+        display: block;
+        margin-top: 4px;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <main class="card">
-    <div class="icon">📦</div>
-    <h1>International Items HN</h1>
-    <p id="message">Preparando el seguimiento oficial de tu envío.</p>
-    <div id="guideBox" class="guide">Cargando…</div>
-    <div id="progress" class="bar"><span></span></div>
-    <a id="manualLink" href="#">Abrir seguimiento ahora</a>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">
+          <img
+            src="logo.png"
+            alt=""
+            onerror="this.remove(); this.parentElement.textContent='II';"
+          >
+        </div>
+
+        <div>
+          <strong>International Items</strong>
+          <span>Seguimiento de envíos</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="card search-card">
+      <h1 class="search-title">Consultar otra guía</h1>
+
+      <form id="searchForm" class="search-form">
+        <input
+          id="guideInput"
+          class="input"
+          type="text"
+          placeholder="Ejemplo: 416430988-1"
+          autocomplete="off"
+          spellcheck="false"
+          required
+        >
+        <button class="btn" type="submit">Buscar guía</button>
+      </form>
+    </section>
+
+    <section id="result"></section>
+
+    <div class="footer">
+      La información mostrada corresponde al estado publicado para esta guía.
+      Cuando el paquete ya fue recolectado, el sistema abre el seguimiento
+      oficial de Cargo Expreso.
+    </div>
   </main>
 
   <script>
     'use strict';
 
-    const AID = 'c586fa65-473e-454d-826b-448cea88b320';
-    const params = new URLSearchParams(window.location.search);
-    const guide = String(params.get('guia') || params.get('ordno') || '')
-      .trim()
-      .toUpperCase()
-      .replace(/\s+/g, '')
-      .replace(/[^A-Z0-9-]/g, '')
-      .slice(0, 60);
+    /*
+     * PEGA AQUÍ la URL /exec de la implementación de Apps Script.
+     * Ejemplo:
+     * https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
+     */
+    const APPS_SCRIPT_WEB_APP_URL =
+      'REEMPLAZA_AQUI_LA_URL_DE_TU_APPS_SCRIPT';
 
-    const guideBox = document.getElementById('guideBox');
-    const message = document.getElementById('message');
-    const progress = document.getElementById('progress');
-    const manualLink = document.getElementById('manualLink');
+    const CARGO_REDIRECT_DELAY_MS = 1100;
+    const result = document.getElementById('result');
+    const guideInput = document.getElementById('guideInput');
 
-    if (!guide) {
-      guideBox.textContent = 'Número no encontrado';
-      guideBox.classList.add('error');
-      message.textContent = 'El enlace no contiene un número de guía válido.';
-      progress.hidden = true;
-      manualLink.hidden = true;
-    } else {
-      const target = `https://api.loginextsolutions.com/trackall/#/order?ordno=${encodeURIComponent(guide)}&aid=${encodeURIComponent(AID)}`;
-      guideBox.textContent = guide;
-      manualLink.href = target;
-      setTimeout(() => window.location.replace(target), 5000);
+    const STAGES = [
+      {
+        id: 'created',
+        title: 'Orden creada',
+        description:
+          'La guía fue registrada correctamente en nuestro sistema.'
+      },
+      {
+        id: 'collecting',
+        title: 'En proceso de recolecta',
+        description:
+          'La solicitud de recolección está registrada. El paquete se encuentra pendiente de ser retirado por la empresa de transporte.'
+      },
+      {
+        id: 'collected',
+        title: 'Recolectada',
+        description:
+          'El paquete ya fue recibido por la empresa de transporte.'
+      },
+      {
+        id: 'route_department',
+        title: 'En ruta hacia el departamento de destino',
+        description:
+          'El paquete se encuentra viajando hacia el departamento correspondiente.'
+      },
+      {
+        id: 'arrived_department',
+        title: 'Llegó al departamento de destino',
+        description:
+          'El paquete llegó al departamento donde será realizada la entrega.'
+      },
+      {
+        id: 'route_final',
+        title: 'En ruta a destino final',
+        description:
+          'El paquete salió para ser entregado en la agencia o dirección indicada.'
+      },
+      {
+        id: 'delivery_attempt',
+        title: 'Intento de entrega',
+        description:
+          'Se realizó un intento de entrega, pero no pudo completarse. La empresa de transporte continuará el proceso.'
+      },
+      {
+        id: 'delivered',
+        title: 'Paquete entregado',
+        description:
+          'La entrega fue completada satisfactoriamente.'
+      }
+    ];
+
+    const STATUS_LABELS = {
+      created: 'Orden creada',
+      collecting: 'Pendiente de recolección',
+      collected: 'Recolectada',
+      route_department: 'En tránsito',
+      arrived_department: 'En departamento de destino',
+      route_final: 'En ruta a destino final',
+      delivery_attempt: 'Intento de entrega',
+      delivered: 'Entregado',
+      cancelled: 'Guía cancelada'
+    };
+
+    document
+      .getElementById('searchForm')
+      .addEventListener('submit', event => {
+        event.preventDefault();
+
+        const guide = normalizeGuide(guideInput.value);
+        if (!guide) return;
+
+        const url = new URL(window.location.href);
+        url.searchParams.set('guia', guide);
+        history.pushState({}, '', url);
+
+        loadGuide(guide);
+      });
+
+    window.addEventListener('popstate', loadFromUrl);
+    loadFromUrl();
+
+    function loadFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const guide = normalizeGuide(
+        params.get('guia') ||
+        params.get('ordno') ||
+        ''
+      );
+
+      guideInput.value = guide;
+
+      if (!guide) {
+        showInitialState();
+        return;
+      }
+
+      loadGuide(guide);
+    }
+
+    function normalizeGuide(value) {
+      return String(value || '')
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, '')
+        .replace(/[^A-Z0-9-]/g, '')
+        .slice(0, 60);
+    }
+
+    async function loadGuide(guide) {
+      showLoading(guide);
+
+      if (!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(
+        APPS_SCRIPT_WEB_APP_URL
+      )) {
+        showConfigurationError(guide);
+        return;
+      }
+
+      try {
+        const data = await jsonp(
+          APPS_SCRIPT_WEB_APP_URL,
+          {
+            api: 'tracking',
+            guia: guide,
+            _: Date.now()
+          },
+          12000
+        );
+
+        if (!data || !data.ok) {
+          throw new Error(data && data.error
+            ? data.error
+            : 'No fue posible consultar la guía.'
+          );
+        }
+
+        if (!data.found) {
+          showNotFound(guide);
+          return;
+        }
+
+        if (data.status === 'collected') {
+          showRedirecting(data);
+
+          setTimeout(() => {
+            window.location.replace(data.officialUrl);
+          }, CARGO_REDIRECT_DELAY_MS);
+
+          return;
+        }
+
+        renderOwnTracking(data);
+      } catch (error) {
+        showError(guide, error);
+      }
+    }
+
+    function jsonp(baseUrl, params, timeoutMs) {
+      return new Promise((resolve, reject) => {
+        const callbackName =
+          '__itemsTrackingCallback_' +
+          Date.now() +
+          '_' +
+          Math.random().toString(36).slice(2);
+
+        const script = document.createElement('script');
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error('La consulta tardó demasiado.'));
+        }, timeoutMs);
+
+        function cleanup() {
+          clearTimeout(timer);
+          delete window[callbackName];
+          script.remove();
+        }
+
+        window[callbackName] = data => {
+          cleanup();
+          resolve(data);
+        };
+
+        const url = new URL(baseUrl);
+        Object.entries(params).forEach(([key, value]) => {
+          url.searchParams.set(key, value);
+        });
+        url.searchParams.set('callback', callbackName);
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error('No se pudo conectar con el seguimiento.'));
+        };
+
+        script.src = url.toString();
+        document.head.appendChild(script);
+      });
+    }
+
+    function renderOwnTracking(data) {
+      const status = data.status || 'collecting';
+
+      if (status === 'cancelled') {
+        result.innerHTML = trackingShell(data, `
+          <div class="notice danger">
+            Esta guía fue marcada como cancelada. No se encuentra activa para
+            recolección o entrega.
+          </div>
+          ${timelineHtml('created', data.trackingUpdatedAt)}
+        `);
+        return;
+      }
+
+      const noticeClass = status === 'delivery_attempt' ? 'warning' : '';
+      const noticeText = status === 'collecting'
+        ? 'La guía ya fue creada y la solicitud de recolección se encuentra registrada. Cuando Cargo Expreso retire el paquete, este mismo enlace abrirá automáticamente el seguimiento oficial.'
+        : status === 'delivery_attempt'
+          ? 'La entrega no pudo completarse en el primer intento. La empresa de transporte continuará el proceso según su ruta.'
+          : 'El seguimiento se encuentra actualizado con el último estado publicado.';
+
+      result.innerHTML = trackingShell(data, `
+        <div class="notice ${noticeClass}">${escapeHtml(noticeText)}</div>
+        ${timelineHtml(status, data.trackingUpdatedAt)}
+      `);
+    }
+
+    function trackingShell(data, bodyHtml) {
+      return `
+        <article class="card">
+          <header class="tracking-head">
+            <div>
+              <div class="eyebrow">Número de guía</div>
+              <h2 class="guide-number">${escapeHtml(data.guideNumber)}</h2>
+            </div>
+
+            <div class="status-pill">
+              ${escapeHtml(STATUS_LABELS[data.status] || 'En proceso')}
+            </div>
+          </header>
+
+          <section class="summary">
+            <div class="summary-item">
+              <span class="summary-label">Empresa de envío</span>
+              <span class="summary-value">
+                ${escapeHtml(data.provider || 'Cargo Expreso')}
+              </span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Última actualización</span>
+              <span class="summary-value">
+                ${escapeHtml(formatDate(data.trackingUpdatedAt))}
+              </span>
+            </div>
+          </section>
+
+          ${bodyHtml}
+        </article>
+      `;
+    }
+
+    function timelineHtml(currentStatus, updatedAt) {
+      let currentIndex = STAGES.findIndex(stage => stage.id === currentStatus);
+
+      if (currentIndex < 0) {
+        currentIndex = 1;
+      }
+
+      return `
+        <section class="timeline-wrap">
+          <h3 class="timeline-title">Progreso del envío</h3>
+
+          <div class="timeline">
+            ${STAGES.map((stage, index) => {
+              let stateClass = 'pending';
+
+              if (index < currentIndex) stateClass = 'completed';
+              if (index === currentIndex) stateClass = 'current';
+              if (stage.id === 'delivery_attempt' &&
+                  currentStatus === 'delivery_attempt') {
+                stateClass = 'warning current';
+              }
+
+              const date = index === currentIndex
+                ? formatDate(updatedAt)
+                : '';
+
+              return `
+                <div class="step ${stateClass}">
+                  <span class="step-line"></span>
+                  <span class="dot"></span>
+
+                  <div class="step-content">
+                    <div class="step-title-row">
+                      <div class="step-title">${escapeHtml(stage.title)}</div>
+                      <time class="step-date">${escapeHtml(date)}</time>
+                    </div>
+
+                    <p class="step-description">
+                      ${escapeHtml(stage.description)}
+                    </p>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function showInitialState() {
+      result.innerHTML = `
+        <article class="card state-card">
+          <div class="state-icon">📦</div>
+          <h2>Consulta el progreso de tu envío</h2>
+          <p>
+            Escribe el número de guía exactamente como aparece en la
+            confirmación recibida.
+          </p>
+        </article>
+      `;
+    }
+
+    function showLoading(guide) {
+      result.innerHTML = `
+        <article class="card state-card">
+          <div class="state-icon">🔎</div>
+          <h2>Consultando ${escapeHtml(guide)}</h2>
+          <p>Estamos obteniendo el estado más reciente publicado.</p>
+          <div class="loader"></div>
+        </article>
+      `;
+    }
+
+    function showRedirecting(data) {
+      result.innerHTML = `
+        <article class="card state-card">
+          <div class="state-icon">🚚</div>
+          <h2>Paquete recolectado</h2>
+          <p>
+            La guía ${escapeHtml(data.guideNumber)} ya fue recibida por
+            Cargo Expreso. Abriendo el seguimiento oficial.
+          </p>
+          <div class="progress"><span></span></div>
+        </article>
+      `;
+    }
+
+    function showNotFound(guide) {
+      result.innerHTML = `
+        <article class="card state-card">
+          <div class="state-icon">⏳</div>
+          <h2>Seguimiento en preparación</h2>
+          <p>
+            Aún no hay información publicada para la guía
+            <strong>${escapeHtml(guide)}</strong>. Verifica el número o
+            vuelve a consultar más tarde.
+          </p>
+        </article>
+      `;
+    }
+
+    function showConfigurationError(guide) {
+      result.innerHTML = `
+        <article class="card state-card">
+          <div class="state-icon">⚙️</div>
+          <h2>Falta conectar el sistema</h2>
+          <p>
+            El administrador debe pegar la URL /exec de Apps Script dentro
+            del archivo index.html. Guía consultada:
+            <strong>${escapeHtml(guide)}</strong>.
+          </p>
+        </article>
+      `;
+    }
+
+    function showError(guide, error) {
+      result.innerHTML = `
+        <article class="card state-card">
+          <div class="state-icon">!</div>
+          <h2>No se pudo consultar ahora</h2>
+          <p>
+            La guía ${escapeHtml(guide)} no pudo ser consultada en este
+            momento. ${escapeHtml(error && error.message || '')}
+          </p>
+        </article>
+      `;
+    }
+
+    function formatDate(value) {
+      if (!value) return 'Sin fecha publicada';
+
+      const date = new Date(value);
+      if (isNaN(date.getTime())) return 'Sin fecha publicada';
+
+      return new Intl.DateTimeFormat('es-HN', {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      }).format(date);
+    }
+
+    function escapeHtml(value) {
+      return String(value == null ? '' : value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
     }
   </script>
 </body>
