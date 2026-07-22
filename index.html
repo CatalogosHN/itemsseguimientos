@@ -338,6 +338,16 @@
       box-shadow: 0 0 0 2px #efc37c;
     }
 
+    .step.danger .dot {
+      background: var(--danger);
+      box-shadow: 0 0 0 2px #f1a8a8;
+    }
+
+    .step.success .dot {
+      background: var(--success);
+      box-shadow: 0 0 0 2px #94d7b4;
+    }
+
     .step.completed .dot::after {
       content: "✓";
       color: white;
@@ -557,56 +567,68 @@
     const result = document.getElementById('result');
     const guideInput = document.getElementById('guideInput');
 
-    const STAGES = [
-      {
-        id: 'created',
+    const EVENT_META = {
+      created: {
         title: 'Orden creada',
         description:
           'La guía fue registrada correctamente en nuestro sistema.'
       },
-      {
-        id: 'collecting',
+      collecting: {
         title: 'En proceso de recolecta',
         description:
           'La solicitud de recolección está registrada. El paquete se encuentra pendiente de ser retirado por la empresa de transporte.'
       },
-      {
-        id: 'collected',
+      collected: {
         title: 'Recolectada',
         description:
           'El paquete ya fue recibido por la empresa de transporte.'
       },
-      {
-        id: 'route_department',
+      route_department: {
         title: 'En ruta hacia el departamento de destino',
         description:
           'El paquete se encuentra viajando hacia el departamento correspondiente.'
       },
-      {
-        id: 'arrived_department',
+      arrived_department: {
         title: 'Llegó al departamento de destino',
         description:
           'El paquete llegó al departamento donde será realizada la entrega.'
       },
-      {
-        id: 'route_final',
+      route_final: {
         title: 'En ruta a destino final',
         description:
           'El paquete salió para ser entregado en la agencia o dirección indicada.'
       },
-      {
-        id: 'delivery_attempt',
+      delivery_attempt: {
         title: 'Intento de entrega',
         description:
-          'Se realizó un intento de entrega, pero no pudo completarse. La empresa de transporte continuará el proceso.'
+          'Se realizó un intento de entrega, pero no pudo completarse.'
       },
-      {
-        id: 'delivered',
+      returning: {
+        title: 'Paquete en devolución al remitente',
+        description:
+          'El paquete inició el recorrido de regreso hacia el remitente.'
+      },
+      returned: {
+        title: 'Paquete devuelto al remitente',
+        description:
+          'El paquete fue recibido nuevamente por el remitente.'
+      },
+      delivered: {
         title: 'Paquete entregado',
         description:
           'La entrega fue completada satisfactoriamente.'
+      },
+      not_received: {
+        title: 'Paquete cancelado por no ser recibido',
+        description:
+          'El proceso fue cerrado porque el paquete no pudo ser recibido.'
+      },
+      cancelled: {
+        title: 'Guía cancelada',
+        description:
+          'La guía fue cancelada antes de completar la entrega.'
       }
-    ];
+    };
 
     const STATUS_LABELS = {
       created: 'Orden creada',
@@ -616,7 +638,10 @@
       arrived_department: 'En departamento de destino',
       route_final: 'En ruta a destino final',
       delivery_attempt: 'Intento de entrega',
+      returning: 'En devolución al remitente',
+      returned: 'Devuelto al remitente',
       delivered: 'Entregado',
+      not_received: 'Paquete no recibido',
       cancelled: 'Guía cancelada'
     };
 
@@ -756,106 +781,187 @@
     }
 
     function renderOwnTracking(data) {
-      const status = data.status || 'collecting';
+      const history = normalizeHistory(
+        data.history,
+        data.status,
+        data.trackingUpdatedAt,
+        data.createdAt
+      );
+
+      const currentStatus = history.length
+        ? history[history.length - 1].status
+        : data.status || 'collecting';
+
+      const notice = noticeForStatus(currentStatus, history);
+
+      result.innerHTML = trackingShell(
+        {
+          ...data,
+          status: currentStatus
+        },
+        `
+          <div class="notice ${notice.className}">
+            ${escapeHtml(notice.text)}
+          </div>
+          ${timelineHtml(history)}
+        `
+      );
+    }
+
+    function normalizeHistory(rawHistory, currentStatus, updatedAt, createdAt) {
+      const history = Array.isArray(rawHistory)
+        ? rawHistory
+            .map(event => ({
+              status: String(event && event.status || '').toLowerCase(),
+              at: String(event && event.at || '')
+            }))
+            .filter(event => Boolean(EVENT_META[event.status]))
+        : [];
+
+      if (history.length) {
+        return history;
+      }
+
+      const fallbackStatus = EVENT_META[currentStatus]
+        ? currentStatus
+        : 'collecting';
+
+      const fallback = [];
+
+      if (fallbackStatus !== 'created') {
+        fallback.push({
+          status: 'created',
+          at: createdAt || ''
+        });
+      }
+
+      fallback.push({
+        status: fallbackStatus,
+        at: updatedAt || createdAt || ''
+      });
+
+      return fallback;
+    }
+
+    function noticeForStatus(status, history) {
+      if (status === 'collecting') {
+        return {
+          className: '',
+          text:
+            'La guía ya fue creada y la solicitud de recolección se encuentra registrada. Cuando Cargo Expreso retire el paquete, este mismo enlace abrirá automáticamente el seguimiento oficial.'
+        };
+      }
+
+      if (status === 'delivery_attempt') {
+        return {
+          className: 'warning',
+          text:
+            'La entrega no pudo completarse. Cuando el paquete vuelva a salir, aparecerá un nuevo evento “En ruta a destino final”.'
+        };
+      }
+
+      if (status === 'route_final' &&
+          history.some(event => event.status === 'delivery_attempt')) {
+        return {
+          className: '',
+          text:
+            'El paquete salió nuevamente para realizar otro intento de entrega.'
+        };
+      }
+
+      if (status === 'returning') {
+        return {
+          className: 'warning',
+          text:
+            'El paquete está regresando al remitente. Este movimiento puede generar un costo adicional de devolución.'
+        };
+      }
+
+      if (status === 'returned') {
+        return {
+          className: '',
+          text:
+            'El paquete ya fue recibido nuevamente por el remitente.'
+        };
+      }
+
+      if (status === 'not_received') {
+        return {
+          className: 'danger',
+          text:
+            'El proceso fue cerrado porque el paquete no pudo ser recibido.'
+        };
+      }
 
       if (status === 'cancelled') {
-        result.innerHTML = trackingShell(data, `
-          <div class="notice danger">
-            Esta guía fue marcada como cancelada. No se encuentra activa para
-            recolección o entrega.
-          </div>
-          ${timelineHtml('created', data.trackingUpdatedAt)}
-        `);
-        return;
+        return {
+          className: 'danger',
+          text:
+            'La guía fue cancelada y ya no continúa en proceso de entrega.'
+        };
       }
 
-      const noticeClass = status === 'delivery_attempt' ? 'warning' : '';
-      const noticeText = status === 'collecting'
-        ? 'La guía ya fue creada y la solicitud de recolección se encuentra registrada. Cuando Cargo Expreso retire el paquete, este mismo enlace abrirá automáticamente el seguimiento oficial.'
-        : status === 'delivery_attempt'
-          ? 'La entrega no pudo completarse en el primer intento. La empresa de transporte continuará el proceso según su ruta.'
-          : 'El seguimiento se encuentra actualizado con el último estado publicado.';
-
-      result.innerHTML = trackingShell(data, `
-        <div class="notice ${noticeClass}">${escapeHtml(noticeText)}</div>
-        ${timelineHtml(status, data.trackingUpdatedAt)}
-      `);
-    }
-
-    function trackingShell(data, bodyHtml) {
-      return `
-        <article class="card">
-          <header class="tracking-head">
-            <div>
-              <div class="eyebrow">Número de guía</div>
-              <h2 class="guide-number">${escapeHtml(data.guideNumber)}</h2>
-            </div>
-
-            <div class="status-pill">
-              ${escapeHtml(STATUS_LABELS[data.status] || 'En proceso')}
-            </div>
-          </header>
-
-          <section class="summary">
-            <div class="summary-item">
-              <span class="summary-label">Empresa de envío</span>
-              <span class="summary-value">
-                ${escapeHtml(data.provider || 'Cargo Expreso')}
-              </span>
-            </div>
-
-            <div class="summary-item">
-              <span class="summary-label">Última actualización</span>
-              <span class="summary-value">
-                ${escapeHtml(formatDate(data.trackingUpdatedAt))}
-              </span>
-            </div>
-          </section>
-
-          ${bodyHtml}
-        </article>
-      `;
-    }
-
-    function timelineHtml(currentStatus, updatedAt) {
-      let currentIndex = STAGES.findIndex(stage => stage.id === currentStatus);
-
-      if (currentIndex < 0) {
-        currentIndex = 1;
+      if (status === 'delivered') {
+        return {
+          className: '',
+          text:
+            'El paquete fue entregado satisfactoriamente.'
+        };
       }
+
+      return {
+        className: '',
+        text:
+          'El seguimiento muestra únicamente los movimientos que ya fueron registrados.'
+      };
+    }
+
+    function timelineHtml(history) {
+      const occurrences = Object.create(null);
 
       return `
         <section class="timeline-wrap">
           <h3 class="timeline-title">Progreso del envío</h3>
 
           <div class="timeline">
-            ${STAGES.map((stage, index) => {
-              let stateClass = 'pending';
+            ${history.map((event, index) => {
+              occurrences[event.status] =
+                (occurrences[event.status] || 0) + 1;
 
-              if (index < currentIndex) stateClass = 'completed';
-              if (index === currentIndex) stateClass = 'current';
-              if (stage.id === 'delivery_attempt' &&
-                  currentStatus === 'delivery_attempt') {
-                stateClass = 'warning current';
-              }
+              const occurrence = occurrences[event.status];
+              const meta = eventPresentation(
+                event.status,
+                occurrence
+              );
 
-              const date = index === currentIndex
-                ? formatDate(updatedAt)
-                : '';
+              const isLast = index === history.length - 1;
+              const classes = [
+                isLast ? 'current' : 'completed',
+                event.status === 'delivery_attempt' ? 'warning' : '',
+                event.status === 'cancelled' ||
+                event.status === 'not_received'
+                  ? 'danger'
+                  : '',
+                event.status === 'delivered' ? 'success' : ''
+              ].filter(Boolean).join(' ');
 
               return `
-                <div class="step ${stateClass}">
+                <div class="step ${classes}">
                   <span class="step-line"></span>
                   <span class="dot"></span>
 
                   <div class="step-content">
                     <div class="step-title-row">
-                      <div class="step-title">${escapeHtml(stage.title)}</div>
-                      <time class="step-date">${escapeHtml(date)}</time>
+                      <div class="step-title">
+                        ${escapeHtml(meta.title)}
+                      </div>
+                      <time class="step-date">
+                        ${escapeHtml(formatDate(event.at))}
+                      </time>
                     </div>
 
                     <p class="step-description">
-                      ${escapeHtml(stage.description)}
+                      ${escapeHtml(meta.description)}
                     </p>
                   </div>
                 </div>
@@ -864,6 +970,42 @@
           </div>
         </section>
       `;
+    }
+
+    function eventPresentation(status, occurrence) {
+      const base = EVENT_META[status] || EVENT_META.collecting;
+
+      if (status === 'route_final' && occurrence > 1) {
+        return {
+          title:
+            `En ruta a destino final · ${ordinalAttempt(occurrence)} intento`,
+          description:
+            'El paquete salió nuevamente para realizar otro intento de entrega.'
+        };
+      }
+
+      if (status === 'delivery_attempt') {
+        return {
+          title: occurrence === 1
+            ? 'Intento de entrega no completado'
+            : `${ordinalAttempt(occurrence)} intento de entrega no completado`,
+          description:
+            'La entrega no pudo completarse. El evento queda guardado en el historial.'
+        };
+      }
+
+      return base;
+    }
+
+    function ordinalAttempt(number) {
+      const names = {
+        2: 'Segundo',
+        3: 'Tercer',
+        4: 'Cuarto',
+        5: 'Quinto'
+      };
+
+      return names[number] || `Intento ${number}`;
     }
 
     function showInitialState() {
