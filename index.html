@@ -808,6 +808,46 @@
       );
     }
 
+
+    function trackingShell(data, bodyHtml) {
+      return `
+        <article class="card">
+          <header class="tracking-head">
+            <div>
+              <div class="eyebrow">Número de guía</div>
+              <h2 class="guide-number">
+                ${escapeHtml(data.guideNumber)}
+              </h2>
+            </div>
+
+            <div class="status-pill">
+              ${escapeHtml(
+                STATUS_LABELS[data.status] || 'En proceso'
+              )}
+            </div>
+          </header>
+
+          <section class="summary">
+            <div class="summary-item">
+              <span class="summary-label">Empresa de envío</span>
+              <span class="summary-value">
+                ${escapeHtml(data.provider || 'Cargo Expreso')}
+              </span>
+            </div>
+
+            <div class="summary-item">
+              <span class="summary-label">Última actualización</span>
+              <span class="summary-value">
+                ${escapeHtml(formatDate(data.trackingUpdatedAt))}
+              </span>
+            </div>
+          </section>
+
+          ${bodyHtml}
+        </article>
+      `;
+    }
+
     function normalizeHistory(rawHistory, currentStatus, updatedAt, createdAt) {
       const history = Array.isArray(rawHistory)
         ? rawHistory
