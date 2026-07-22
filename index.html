@@ -723,7 +723,7 @@
           return;
         }
 
-        if (data.status === 'collected') {
+        if (data.officialTrackingEnabled === true) {
           showRedirecting(data);
 
           setTimeout(() => {
@@ -1076,10 +1076,10 @@
       result.innerHTML = `
         <article class="card state-card">
           <div class="state-icon">🚚</div>
-          <h2>Paquete recolectado</h2>
+          <h2>Seguimiento en Cargo Expreso</h2>
           <p>
-            La guía ${escapeHtml(data.guideNumber)} ya fue recibida por
-            Cargo Expreso. Abriendo el seguimiento oficial.
+            La recolección de la guía ${escapeHtml(data.guideNumber)}
+            fue confirmada manualmente. Abriendo el rastreo de Cargo Expreso.
           </p>
           <div class="progress"><span></span></div>
         </article>
